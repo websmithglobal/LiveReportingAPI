@@ -72,17 +72,6 @@ namespace SOAP_LiveReporting
 
         #endregion
 
-        #region GetClient
-        [WebMethod(Description = "Retrive Client Information..")]
-        [SoapDocumentMethod(Binding = "LiveReporting")]
-        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
-        public string GetProfile(int UserID)
-        {
-            GetClientData proc = new GetClientData();
-            return "{\"Profile\" : " + Serialize(proc.GetUserInformation(UserID)) + "}";
-        }
-        #endregion
-
         #region State
         [WebMethod(Description = "Retrive State List..")]
         [SoapDocumentMethod(Binding = "LiveReporting")]
@@ -327,7 +316,6 @@ namespace SOAP_LiveReporting
         }
         #endregion
 
-
         #region Get Video
         [WebMethod(Description = "Retrive Video List..")]
         [SoapDocumentMethod(Binding = "LiveReporting")]
@@ -395,7 +383,6 @@ namespace SOAP_LiveReporting
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public string Users_SignUp(DataSingup obj)
         {
-
             MEMBERS.SQLReturnValue M;
             DataSingup Singobj = new DataSingup();
             if (string.IsNullOrEmpty(obj.Mobile) || string.IsNullOrEmpty(obj.FirstName) || string.IsNullOrEmpty(obj.Password) || string.IsNullOrEmpty(obj.LastName) || string.IsNullOrEmpty(obj.EmailId))
@@ -412,6 +399,39 @@ namespace SOAP_LiveReporting
                 return "{\"Singup\" : " + Serialize(new AuthResponse(0, M.MessageFromSQL)) + "}";
             }
 
+        }
+
+        [WebMethod(Description = "Users Profile Update")]
+        [SoapDocumentMethod(Binding = "LiveReporting")]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string Users_Profile_Update(DataUpdateProfile obj)
+        {
+            MEMBERS.SQLReturnValue M;
+            DataSingup Singobj = new DataSingup();
+            if (obj.ClientIDP <= 0 || string.IsNullOrEmpty(obj.Mobile) || string.IsNullOrEmpty(obj.FirstName) || string.IsNullOrEmpty(obj.LastName) || string.IsNullOrEmpty(obj.EmailId) || string.IsNullOrEmpty(obj.Gender))
+            {
+                return "{\"Singup\" : " + Serialize(new AuthResponse(0, "Paramters is NULL")) + "}";
+            }
+            M = Singup.Update_ClientProfileFromApp(obj);
+            if (M.ValueFromSQL > 0)
+            {
+                return "{\"Singup\" : " + Serialize(new AuthResponse(M.ValueFromSQL, M.MessageFromSQL)) + "}";
+            }
+            else
+            {
+                return "{\"Singup\" : " + Serialize(new AuthResponse(0, M.MessageFromSQL)) + "}";
+            }
+        }
+        #endregion
+
+        #region GetClient
+        [WebMethod(Description = "Retrive Client Information..")]
+        [SoapDocumentMethod(Binding = "LiveReporting")]
+        [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+        public string GetProfile(int UserID)
+        {
+            GetClientData proc = new GetClientData();
+            return "{\"Profile\" : " + Serialize(proc.GetUserInformation(UserID)) + "}";
         }
         #endregion
 
